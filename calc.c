@@ -66,9 +66,8 @@ float calc(char *input) {
     char op;
 
     for (int i = 0; input[i] != '\0'; i++) {
-	a = strtof(&input[1], NULL);
-	b = strtof(&input[3], NULL);
-	op = strtof(&input[2], NULL);
+
+	sscanf(input, "%g %c %g", &a, &op, &b);
 
 	if (op == '+')
 	    result = a + b;
