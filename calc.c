@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+char *get_line(FILE *stream);
+float calc(char *input);
+
 // Simple calculator made in C by alicela1n, 2024
 
-// Function to read a line
+// *get_line(): Read a line and return it as a string
 char *get_line(FILE *stream) {
     const size_t chunk = 4096;
     size_t max_len = chunk;
@@ -13,6 +16,7 @@ char *get_line(FILE *stream) {
         return NULL;
 
     size_t i = 0;
+    printf("> ");
     for (char ch = fgetc(stream); ch != EOF; ch = fgetc(stream)) {
         if (i == max_len) {
             max_len += chunk;
@@ -37,37 +41,55 @@ char *get_line(FILE *stream) {
     return line;
 }
 
-int calc(void) {
+// calc_prompt(): Prompt for input
+void calc_prompt(void) {
+    // Sets the size of the character array for the prompt input
+    char *line = NULL;
+
+    while ((line = get_line(stdin))) {
+    
+	// Exit the program if it detects exit being typed in.
+	if(strcmp(line, "exit\n")==0||strcmp(line, "quit\n")==0||strcmp(line,"q\n")==0) {
+	    exit(0);
+	}
+
+	float result = calc(line);
+	printf("%f\n", result);
+	free(line);
+    }
+}
+
+// calc(): Do calculations
+float calc(char *input) {
     float a, b;
     float result = 0;
     char op;
 
-    char *line = NULL;
-    while ((line = get_line(stdin))) {
-        printf("> ");
-        if(strcmp(line,"exit\n")==0||strcmp(line,"quit\n")==0||strcmp(line,"q\n")==0) {
-            exit(0);
-            return 0;
-        }
-        sscanf(line, "%g %c %g", &a, &op, &b);
-        free(line);
-        if (op == '+')
-            result = a + b; // Addition
-        else if (op == '-')
-            result = a - b; // Subtraction
-        else if (op == '/')
-            result = a / b; // Division
-        else if (op == '*')
-            result = a * b; // Multiplication
-        else
-            printf("Error!\n");
-        printf("%g\n", result);
+    for (int i = 0; input[i] != '\0'; i++) {
+	a = strtof(&input[1], NULL);
+	b = strtof(&input[3], NULL);
+	op = strtof(&input[2], NULL);
+
+	if (op == '+')
+	    result = a + b;
+	else if (op == '-')
+	    result = a - b;
+	else if (op == '/')
+	    result = a / b;
+	else if (op == '*')
+	    result = a * b;
+	else
+	    printf("ERROR!\n");
+
+	return result;
     }
+
     return 0;
 }
 
+// main(): Main function
 int main(void) {
     printf("Use exit, quit, or q to quit.\n");
-    calc();
+    calc_prompt();
     return 0;
 }
