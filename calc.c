@@ -67,25 +67,18 @@ float calc(char *input) {
 
     // TODO: Write a recursive decant parser
     // This code is temporary
-    for (int i = 0; input[i] != '\0'; i++) {
-
-	sscanf(input, "%g %c %g", &a, &op, &b);
-
-	if (op == '+')
-	    result = a + b;
-	else if (op == '-')
-	    result = a - b;
-	else if (op == '/')
-	    result = a / b;
-	else if (op == '*')
-	    result = a * b;
-	else
-	    printf("ERROR!\n");
-
-	return result;
-    }
-
-    return 0;
+    sscanf(input, "%g %c %g", &a, &op, &b);
+    if (op == '+')
+	result = a + b;
+    else if (op == '-')
+	result = a - b;
+    else if (op == '/')
+	result = a / b;
+    else if (op == '*')
+	result = a * b;
+    else
+	printf("ERROR!\n");
+    return result;
 }
 
 // main(): Main function
