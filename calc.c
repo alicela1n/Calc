@@ -65,6 +65,8 @@ float calc(char *input) {
     float result = 0;
     char op;
 
+    // TODO: Write a recursive decant parser
+    // This code is temporary
     for (int i = 0; input[i] != '\0'; i++) {
 
 	sscanf(input, "%g %c %g", &a, &op, &b);
