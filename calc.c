@@ -17,6 +17,7 @@ enum operator {
     OPERATOR_SUB,
     OPERATOR_MUL,
     OPERATOR_DIV,
+    OPERATOR_EXP
 };
 
 struct token {
@@ -146,6 +147,8 @@ struct token *tokenize_input(char *input, int *tokens_nb) {
 		    tokens[*tokens_nb].data.operator = OPERATOR_DIV;
 		    ++*tokens_nb;
 		    break;
+		case '^':
+		    tokens[*tokens_nb].data.operator = OPERATOR_EXP;
 	    }
 	}
 	input = NULL; // Set the input pointer to null
