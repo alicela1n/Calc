@@ -149,6 +149,8 @@ struct token *tokenize_input(char *input, int *tokens_nb) {
 		    break;
 		case '^':
 		    tokens[*tokens_nb].data.operator = OPERATOR_EXP;
+		    ++*tokens_nb;
+		    break;
 	    }
 	}
 	input = NULL; // Set the input pointer to null
