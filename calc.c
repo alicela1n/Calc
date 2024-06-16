@@ -176,15 +176,15 @@ float calc(float left, float right, enum operator op) {
 	return left / right;
     else if (op == OPERATOR_MUL)
 	return left * right;
-    else
-	printf("ERROR!\n");
-    return 0;
+    // Error handling
+    printf("ERROR!\n");
+    exit(1);
 }
 
 float compute_atom(struct token *tokens, int tokens_nb, int *read_nb) {
     if (tokens_nb < 1) {
 	printf("Expected number, found nothing\n");
-	exit(0);
+	exit(1);
     }
 
     if (tokens->type == TOKEN_TYPE_NUMBER) {
@@ -192,7 +192,7 @@ float compute_atom(struct token *tokens, int tokens_nb, int *read_nb) {
 	return tokens->data.number;
     } else {
 	printf("Invalid token\n");
-	exit(0);
+	exit(1);
     }
 }
 
