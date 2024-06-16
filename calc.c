@@ -167,19 +167,18 @@ struct token *tokenize_input(char *input, int *tokens_nb) {
 
 // calc(): Do calculations
 float calc(float left, float right, enum operator op) {
-    float result = 0;
     
     if (op == OPERATOR_ADD)
-	result = left + right;
+	return left + right;
     else if (op == OPERATOR_SUB)
-	result = left - right;
+	return left - right;
     else if (op == OPERATOR_DIV)
-	result = left / right;
+	return left / right;
     else if (op == OPERATOR_MUL)
-	result = left * right;
+	return left * right;
     else
 	printf("ERROR!\n");
-    return result;
+    return 0;
 }
 
 float compute_atom(struct token *tokens, int tokens_nb, int *read_nb) {
