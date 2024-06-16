@@ -20,6 +20,11 @@ enum operator {
     OPERATOR_EXP
 };
 
+enum associativity {
+    LEFT_ASSOCIATIVITY,
+    RIGHT_ASSOCIATIVITY,
+};
+
 struct token {
     enum token_type type;
     union data {
@@ -30,8 +35,9 @@ struct token {
 
 // Declare functions to be used
 char *get_line(FILE *stream);
-float calc(float a, float b, char op);
+float calc(float a, float b, enum operator op);
 struct token *tokenize_input(char *input, int *tokens_nb);
+float parse_expr(struct token *tokens, int tokens_nb, int min_prec, int *read_rd);
 
 // *get_line(): Read a line and return it as a string
 char *get_line(FILE *stream) {
@@ -90,14 +96,15 @@ void calc_prompt(void) {
 	}
 
 	
-	float a, b;
-	char op;
-	sscanf(line, "%g %c %g", &a, &op, &b);
-	float result = calc(a, b, op);
+	int tokens_count = 0;
+	int read_nb = 0;
+	struct token *input = tokenize_input(line, &tokens_count);
+	float result = parse_expr(input, tokens_count, -1, &read_nb);
+	
 	printf("%f\n", result);
 	
-
 	free(line);
+	free(input);
     }
 }
 
@@ -159,20 +166,94 @@ struct token *tokenize_input(char *input, int *tokens_nb) {
 }
 
 // calc(): Do calculations
-float calc(float left, float right, char op) {
+float calc(float left, float right, enum operator op) {
     float result = 0;
     
-    if (op == '+')
+    if (op == OPERATOR_ADD)
 	result = left + right;
-    else if (op == '-')
+    else if (op == OPERATOR_SUB)
 	result = left - right;
-    else if (op == '/')
+    else if (op == OPERATOR_DIV)
 	result = left / right;
-    else if (op == '*')
+    else if (op == OPERATOR_MUL)
 	result = left * right;
     else
 	printf("ERROR!\n");
     return result;
+}
+
+float compute_atom(struct token *tokens, int tokens_nb, int *read_nb) {
+    if (tokens_nb < 1) {
+	printf("Expected number, found nothing\n");
+	exit(0);
+    }
+
+    if (tokens->type == TOKEN_TYPE_NUMBER) {
+	++*read_nb;
+	return tokens->data.number;
+    } else {
+	printf("Invalid token\n");
+	exit(0);
+    }
+}
+
+float parse_expr(struct token *tokens, int tokens_nb, int min_prec, int *read_nb) {
+    *read_nb = 0;
+    float left_atom = compute_atom(tokens, tokens_nb, read_nb);
+    tokens += *read_nb;
+    tokens_nb -= *read_nb;
+
+    int precedence_table[] = {
+        [OPERATOR_ADD] = 0,
+	[OPERATOR_SUB] = 0,
+	[OPERATOR_MUL] = 1,
+	[OPERATOR_DIV] = 1,
+	[OPERATOR_EXP] = 2,
+    };
+
+    enum associativity associativity_table[] = {
+	[OPERATOR_ADD] = LEFT_ASSOCIATIVITY,
+	[OPERATOR_SUB] = LEFT_ASSOCIATIVITY,
+	[OPERATOR_MUL] = LEFT_ASSOCIATIVITY,
+	[OPERATOR_DIV] = LEFT_ASSOCIATIVITY,
+	[OPERATOR_EXP] = RIGHT_ASSOCIATIVITY
+    };
+    
+    int prec = precedence_table[tokens->data.operator];
+
+    while (true) {
+	if (tokens_nb == 0)
+	    break;
+
+	if (tokens->type != TOKEN_TYPE_OPERATOR || prec < min_prec) {
+	    break;
+	}
+
+	enum operator op = tokens->data.operator;
+	int next_min_prec = 0;
+	if (associativity_table[tokens->data.operator] == LEFT_ASSOCIATIVITY) {
+	    next_min_prec = prec + 1;
+	} else {
+	    next_min_prec = prec;
+	}
+
+	// The operatore has been consumed, increment the counter
+	++*read_nb;
+	++tokens;
+	tokens_nb -= 1;
+
+	int rd;
+	float right_atom = parse_expr(tokens, tokens_nb, next_min_prec, &rd);
+	tokens += rd;
+	tokens_nb -= rd;
+
+	// Add the number of tokens read by the recursive calls
+	*read_nb += rd;
+
+	left_atom = calc(left_atom, right_atom, op);
+    }
+
+    return left_atom;
 }
 
 // main(): Main function
