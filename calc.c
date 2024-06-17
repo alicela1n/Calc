@@ -170,15 +170,15 @@ struct token *tokenize_input(char *input, int *tokens_nb) {
 float calc(float left, float right, enum operator op) {
     
     if (op == OPERATOR_ADD)
-		return left + right;
+	return left + right;
     else if (op == OPERATOR_SUB)
-		return left - right;
+	return left - right;
     else if (op == OPERATOR_DIV)
-		return left / right;
+	return left / right;
     else if (op == OPERATOR_MUL)
-		return left * right;
+	return left * right;
     else if (op == OPERATOR_EXP)
-		return pow(left, right);
+	return pow(left, right);
     // Error handling
     printf("ERROR!\n");
     exit(1);
