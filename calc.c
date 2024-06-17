@@ -29,8 +29,8 @@ enum associativity {
 struct token {
     enum token_type type;
     union data {
-        float number;
-        enum operator operator;
+	float number;
+	enum operator operator;
     } data;
 };
 
@@ -47,7 +47,7 @@ char *get_line(FILE *stream) {
     size_t max_len = chunk;
     char *line = malloc(chunk + 1); // Allocate the size of the line buffer
     if (!line)
-        return NULL;
+	return NULL;
 
     size_t i = 0;
 
@@ -57,28 +57,28 @@ char *get_line(FILE *stream) {
     for (char ch = fgetc(stream); ch != EOF; ch = fgetc(stream)) {
 
 	// Allocate more space when the limit is reached
-        if (i == max_len) {
-            max_len += chunk;
-            char *const tmp = realloc(line, max_len + 1);
-            if (!tmp) {
-                free(line);
-                return NULL;
-            }
-            line = tmp;
-        }
+	if (i == max_len) {
+	    max_len += chunk;
+	    char *const tmp = realloc(line, max_len + 1);
+	    if (!tmp) {
+		free(line);
+		return NULL;
+	    }
+	    line = tmp;
+	}
 
 	// Add the character to the line
-        line[i] = ch;
-        i++;
+	line[i] = ch;
+	i++;
 
-        if (ch == '\n')
-            break;
+	if (ch == '\n')
+	    break;
     }
 
     line[i] = '\0';
     if (!line[0]) {
-        free(line);
-        return NULL;
+	free(line);
+	return NULL;
     }
 
     return line;
@@ -206,7 +206,7 @@ float parse_expr(struct token *tokens, int tokens_nb, int min_prec, int *read_nb
     tokens_nb -= *read_nb;
 
     int precedence_table[] = {
-        [OPERATOR_ADD] = 0,
+	[OPERATOR_ADD] = 0,
 	[OPERATOR_SUB] = 0,
 	[OPERATOR_MUL] = 1,
 	[OPERATOR_DIV] = 1,
