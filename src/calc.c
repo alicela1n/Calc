@@ -6,6 +6,9 @@
 #include <ctype.h>
 #include <math.h>
 
+#include <readline/readline.h>
+#include <readline/history.h>
+
 enum token_type {
     TOKEN_TYPE_NUMBER,
     TOKEN_TYPE_OPERATOR,
@@ -35,68 +38,22 @@ struct token {
 };
 
 // Declare functions to be used
-char *get_line(FILE *stream);
 float calc(float a, float b, enum operator op);
 struct token *tokenize_input(char *input, int *tokens_nb);
 float parse_expr(struct token *tokens, int tokens_nb, int min_prec, int *read_rd);
-
-// *get_line(): Read a line and return it as a string
-char *get_line(FILE *stream) {
-    // For performance reasons memory is being allocated in chunks
-    const size_t chunk = 4096; // Size of buffer
-    size_t max_len = chunk;
-    char *line = malloc(chunk + 1); // Allocate the size of the line buffer
-    if (!line)
-	return NULL;
-
-    size_t i = 0;
-
-    printf("> "); // Prompt to be displayed to the user
-    
-    // Get the input from the user and store it in the line string
-    for (char ch = fgetc(stream); ch != EOF; ch = fgetc(stream)) {
-
-	// Allocate more space when the limit is reached
-	if (i == max_len) {
-	    max_len += chunk;
-	    char *const tmp = realloc(line, max_len + 1);
-	    if (!tmp) {
-		free(line);
-		return NULL;
-	    }
-	    line = tmp;
-	}
-
-	// Add the character to the line
-	line[i] = ch;
-	i++;
-
-	if (ch == '\n')
-	    break;
-    }
-
-    line[i] = '\0';
-    if (!line[0]) {
-	free(line);
-	return NULL;
-    }
-
-    return line;
-}
 
 // calc_prompt(): Prompt for input
 void calc_prompt(void) {
     // Sets the size of the character array for the prompt input
     char *line = NULL;
 
-    while ((line = get_line(stdin))) {
+    while ((line = readline("calc> "))) {
     
 	// Exit the program if it detects exit being typed in.
 	if(strcmp(line, "exit\n")==0||strcmp(line, "quit\n")==0||strcmp(line,"q\n")==0) {
 	    exit(0);
 	}
 
-	
 	int tokens_count = 0;
 	int read_nb = 0;
 	struct token *input = tokenize_input(line, &tokens_count);
